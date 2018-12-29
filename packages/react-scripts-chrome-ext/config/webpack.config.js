@@ -34,6 +34,8 @@ const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 // @remove-on-eject-begin
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const DotenvPlugin = require('webpack-dotenv-plugin');
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -49,6 +51,11 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
+const transformPublicFile = (content) => {
+  return content.toString()
+    .replace(/__ENTRY__/, "[name].[chunkhash:8]");
+}
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -544,6 +551,27 @@ module.exports = function(webpackEnv) {
             : undefined
         )
       ),
+
+      new DotenvPlugin({
+        sample: './.env.default',
+        path: './.env'
+      }),
+
+      // process public files 
+      isEnvProduction &&
+        new CopyWebpackPlugin([
+        {
+          from: `${paths.appPublic}/*`,
+          to: paths.appBuild,
+          toType: 'file',
+          transform (content, path) {
+            return Promise.resolve(transformPublicFile(content))
+          }
+        }
+      ], {
+        ignore: "index.html"
+      }),
+
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
       isEnvProduction &&

@@ -1,15 +1,17 @@
 {
   "short_name": "React App",
   "name": "Create React App Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "version": "0.1.0",
+  "browser_action": {
+    "default_title": "React App"
+  },
+  "manifest_version": 2,
+  "permissions": [],
+  "storage": {
+    "managed_schema": "schema.json"
+  },
+  "background": {
+    "scripts": ["static/js/main.%REACT_APP_HASH%.chunk.js"],
+    "persistent": false
+  }
 }
