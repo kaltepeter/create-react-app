@@ -52,10 +52,9 @@ const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
-const transformPublicFile = (content) => {
-  return content.toString()
-    .replace(/__ENTRY__/, "[name].[chunkhash:8]");
-}
+const transformPublicFile = content => {
+  return content.toString().replace(/__ENTRY__/, '[name].[chunkhash:8]');
+};
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -552,25 +551,27 @@ module.exports = function(webpackEnv) {
         )
       ),
 
-      new DotenvPlugin({
-        sample: './.env.default',
-        path: './.env'
-      }),
+      // new DotenvPlugin({
+      //   path: getClientEnvironment
+      // }),
 
-      // process public files 
+      // process public files
       isEnvProduction &&
-        new CopyWebpackPlugin([
-        {
-          from: `${paths.appPublic}/*`,
-          to: paths.appBuild,
-          toType: 'file',
-          transform (content, path) {
-            return Promise.resolve(transformPublicFile(content))
+        new CopyWebpackPlugin(
+          [
+            {
+              from: `${paths.appPublic}/*`,
+              to: paths.appBuild,
+              toType: 'file',
+              transform(content, path) {
+                return Promise.resolve(transformPublicFile(content));
+              },
+            },
+          ],
+          {
+            ignore: 'index.html',
           }
-        }
-      ], {
-        ignore: "index.html"
-      }),
+        ),
 
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
